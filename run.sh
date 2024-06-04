@@ -120,7 +120,7 @@ mongo --eval "db.NfProfile.drop();db.applicationData.influenceData.subsToNotify.
 mongosh --eval "db.NfProfile.drop();db.applicationData.influenceData.subsToNotify.drop();db.applicationData.subsToNotify.drop();db.policyData.subsToNotify.drop();db.exposureData.subsToNotify.drop()" free5gc
 sleep 0.1
 
-NF_LIST="nrf amf smf udr pcf udm nssf ausf chf"
+NF_LIST="nrf amf smf udr pcf udm nssf ausf chf udsf"
 
 export GIN_MODE=release
 
