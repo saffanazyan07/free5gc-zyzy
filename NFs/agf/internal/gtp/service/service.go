@@ -8,9 +8,9 @@ import (
 	gtp "github.com/wmnsk/go-gtp/gtpv1"
 	gtpMsg "github.com/wmnsk/go-gtp/gtpv1/message"
 
-	"github.com/free5gc/n3iwf/internal/gtp/handler"
-	"github.com/free5gc/n3iwf/internal/logger"
-	n3iwfContext "github.com/free5gc/n3iwf/pkg/context"
+	"github.com/free5gc/agf/internal/gtp/handler"
+	"github.com/free5gc/agf/internal/logger"
+	agfContext "github.com/free5gc/agf/pkg/context"
 )
 
 var gtpContext context.Context = context.TODO()
@@ -18,7 +18,7 @@ var gtpContext context.Context = context.TODO()
 // SetupGTPTunnelWithUPF set up GTP connection with UPF
 // return *gtp.UPlaneConn, net.Addr and error
 func SetupGTPTunnelWithUPF(upfIPAddr string) (*gtp.UPlaneConn, net.Addr, error) {
-	n3iwfSelf := n3iwfContext.N3IWFSelf()
+	agfSelf := agfContext.W-AGFSelf()
 
 	// Set up GTP connection
 	upfUDPAddr := upfIPAddr + gtp.GTPUPort
@@ -29,11 +29,11 @@ func SetupGTPTunnelWithUPF(upfIPAddr string) (*gtp.UPlaneConn, net.Addr, error) 
 		return nil, nil, errors.New("Resolve Address Failed")
 	}
 
-	n3iwfUDPAddr := n3iwfSelf.GTPBindAddress + gtp.GTPUPort
+	agfUDPAddr := agfSelf.GTPBindAddress + gtp.GTPUPort
 
-	localUDPAddr, err := net.ResolveUDPAddr("udp", n3iwfUDPAddr)
+	localUDPAddr, err := net.ResolveUDPAddr("udp", agfUDPAddr)
 	if err != nil {
-		logger.GTPLog.Errorf("Resolve UDP address %s failed: %+v", n3iwfUDPAddr, err)
+		logger.GTPLog.Errorf("Resolve UDP address %s failed: %+v", agfUDPAddr, err)
 		return nil, nil, errors.New("Resolve Address Failed")
 	}
 
