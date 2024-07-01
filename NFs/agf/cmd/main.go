@@ -7,14 +7,14 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/free5gc/n3iwf/internal/logger"
-	"github.com/free5gc/n3iwf/pkg/factory"
-	"github.com/free5gc/n3iwf/pkg/service"
+	"github.com/free5gc/agf/internal/logger"
+	"github.com/free5gc/agf/pkg/factory"
+	"github.com/free5gc/agf/pkg/service"
 	logger_util "github.com/free5gc/util/logger"
 	"github.com/free5gc/util/version"
 )
 
-var N3IWF *service.N3iwfApp
+var WAGF *service.WagfApp
 
 func main() {
 	defer func() {
@@ -25,8 +25,8 @@ func main() {
 	}()
 
 	app := cli.NewApp()
-	app.Name = "n3iwf"
-	app.Usage = "Non-3GPP Interworking Function (N3IWF)"
+	app.Name = "wagf"
+	app.Usage = "Wireline Access Gateway Function (W-AGF)"
 	app.Action = action
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -39,7 +39,7 @@ func main() {
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
-		logger.MainLog.Errorf("N3IWF Run Error: %v\n", err)
+		logger.MainLog.Errorf("W-AGF Run Error: %v\n", err)
 	}
 }
 
@@ -49,21 +49,21 @@ func action(cliCtx *cli.Context) error {
 		return err
 	}
 
-	logger.MainLog.Infoln("N3IWF version: ", version.GetVersion())
+	logger.MainLog.Infoln("W-AGF version: ", version.GetVersion())
 
 	cfg, err := factory.ReadConfig(cliCtx.String("config"))
 	if err != nil {
 		return err
 	}
-	factory.N3iwfConfig = cfg
+	factory.WagfConfig = cfg
 
-	n3iwf, err := service.NewApp(cfg)
+	wagf, err := service.NewApp(cfg)
 	if err != nil {
 		return err
 	}
-	N3IWF = n3iwf
+	W-AGF = wagf
 
-	n3iwf.Start(tlsKeyLogPath)
+	wagf.Start(tlsKeyLogPath)
 
 	return nil
 }
@@ -86,7 +86,7 @@ func initLogFile(logNfPath []string) (string, error) {
 			logger.InitLog.Errorf("Make directory %s failed: %+v", tmpDir, err)
 			return "", err
 		}
-		_, name := filepath.Split(factory.N3iwfDefaultTLSKeyLogPath)
+		_, name := filepath.Split(factory.WagfDefaultTLSKeyLogPath)
 		logTlsKeyPath = filepath.Join(tmpDir, name)
 	}
 
