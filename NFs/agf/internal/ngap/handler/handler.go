@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"github.com/free5gc/aper"
-	gtp_service "github.com/free5gc/n3iwf/internal/gtp/service"
-	"github.com/free5gc/n3iwf/internal/logger"
-	ngap_message "github.com/free5gc/n3iwf/internal/ngap/message"
-	"github.com/free5gc/n3iwf/pkg/context"
+	gtp_service "github.com/free5gc/agf/internal/gtp/service"
+	"github.com/free5gc/agf/internal/logger"
+	ngap_message "github.com/free5gc/agf/internal/ngap/message"
+	"github.com/free5gc/agf/pkg/context"
 	"github.com/free5gc/ngap/ngapConvert"
 	"github.com/free5gc/ngap/ngapType"
 	"github.com/free5gc/sctp"
 )
 
 func HandleNGSetupResponse(sctpAddr string, conn *sctp.SCTPConn, message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle NG Setup Response")
+	logger.NgapLog.Infoln("[W-AGF] Handle NG Setup Response")
 
 	var amfName *ngapType.AMFName
 	var servedGUAMIList *ngapType.ServedGUAMIList
@@ -26,7 +26,7 @@ func HandleNGSetupResponse(sctpAddr string, conn *sctp.SCTPConn, message *ngapTy
 
 	var iesCriticalityDiagnostics ngapType.CriticalityDiagnosticsIEList
 
-	n3iwfSelf := context.N3IWFSelf()
+	agfSelf := context.W-AGFSelf()
 
 	if message == nil {
 		logger.NgapLog.Error("NGAP Message is nil")
@@ -101,7 +101,7 @@ func HandleNGSetupResponse(sctpAddr string, conn *sctp.SCTPConn, message *ngapTy
 		return
 	}
 
-	amfInfo := n3iwfSelf.NewN3iwfAmf(sctpAddr, conn)
+	amfInfo := n3iwfSelf.NewagfAmf(sctpAddr, conn)
 
 	if amfName != nil {
 		amfInfo.AMFName = amfName
@@ -125,7 +125,7 @@ func HandleNGSetupResponse(sctpAddr string, conn *sctp.SCTPConn, message *ngapTy
 }
 
 func HandleNGSetupFailure(sctpAddr string, conn *sctp.SCTPConn, message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle NG Setup Failure")
+	logger.NgapLog.Infoln("[WAGF] Handle NG Setup Failure")
 
 	var cause *ngapType.Cause
 	var timeToWait *ngapType.TimeToWait
@@ -133,7 +133,7 @@ func HandleNGSetupFailure(sctpAddr string, conn *sctp.SCTPConn, message *ngapTyp
 
 	var iesCriticalityDiagnostics ngapType.CriticalityDiagnosticsIEList
 
-	n3iwfSelf := context.N3IWFSelf()
+	agfSelf := context.W-AGFSelf()
 
 	if message == nil {
 		logger.NgapLog.Error("NGAP Message is nil")
@@ -221,24 +221,24 @@ func HandleNGSetupFailure(sctpAddr string, conn *sctp.SCTPConn, message *ngapTyp
 
 	if waitingTime != 0 {
 		logger.NgapLog.Infof("Wait at lease  %ds to reinitialize with same AMF[%s]", waitingTime, sctpAddr)
-		n3iwfSelf.AMFReInitAvailableListStore(sctpAddr, false)
+		agfSelf.AMFReInitAvailableListStore(sctpAddr, false)
 		time.AfterFunc(time.Duration(waitingTime)*time.Second, func() {
-			n3iwfSelf.AMFReInitAvailableListStore(sctpAddr, true)
+			agfSelf.AMFReInitAvailableListStore(sctpAddr, true)
 			ngap_message.SendNGSetupRequest(conn)
 		})
 		return
 	}
 }
 
-func HandleNGReset(amf *context.N3IWFAMF, message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle NG Reset")
+func HandleNGReset(amf *context.W-AGFAMF, message *ngapType.NGAPPDU) {
+	logger.NgapLog.Infoln("[W-AGF] Handle NG Reset")
 
 	var cause *ngapType.Cause
 	var resetType *ngapType.ResetType
 
 	var iesCriticalityDiagnostics ngapType.CriticalityDiagnosticsIEList
 
-	n3iwfSelf := context.N3IWFSelf()
+	agfSelf := context.W-AGFSelf()
 
 	if amf == nil {
 		logger.NgapLog.Error("AMF Context is nil")
@@ -2469,27 +2469,27 @@ func HandleRANConfigurationUpdateFailure(amf *context.N3IWFAMF, message *ngapTyp
 }
 
 func HandleDownlinkRANConfigurationTransfer(message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle Downlink RAN Configuration Transfer")
+	logger.NgapLog.Infoln("[W-AGF] Handle Downlink RAN Configuration Transfer")
 }
 
 func HandleDownlinkRANStatusTransfer(message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle Downlink RAN Status Transfer")
+	logger.NgapLog.Infoln("[W-AGF] Handle Downlink RAN Status Transfer")
 }
 
 func HandleAMFStatusIndication(message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle AMF Status Indication")
+	logger.NgapLog.Infoln("[W-AGF] Handle AMF Status Indication")
 }
 
 func HandleLocationReportingControl(message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle Location Reporting Control")
+	logger.NgapLog.Infoln("[W-AGF] Handle Location Reporting Control")
 }
 
 func HandleUETNLAReleaseRequest(message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle UE TNLA Release Request")
+	logger.NgapLog.Infoln("[W-AGF] Handle UE TNLA Release Request")
 }
 
-func HandleOverloadStart(amf *context.N3IWFAMF, message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle Overload Start")
+func HandleOverloadStart(amf *context.W-AGFAMF, message *ngapType.NGAPPDU) {
+	logger.NgapLog.Infoln("[W-AGF Handle Overload Start")
 
 	var aMFOverloadResponse *ngapType.OverloadResponse
 	var aMFTrafficLoadReductionIndication *ngapType.TrafficLoadReductionIndication
@@ -2534,8 +2534,8 @@ func HandleOverloadStart(amf *context.N3IWFAMF, message *ngapType.NGAPPDU) {
 	amf.StartOverload(aMFOverloadResponse, aMFTrafficLoadReductionIndication, overloadStartNSSAIList)
 }
 
-func HandleOverloadStop(amf *context.N3IWFAMF, message *ngapType.NGAPPDU) {
-	logger.NgapLog.Infoln("[N3IWF] Handle Overload Stop")
+func HandleOverloadStop(amf *context.WAGFAMF, message *ngapType.NGAPPDU) {
+	logger.NgapLog.Infoln("[W-AGF] Handle Overload Stop")
 
 	if amf == nil {
 		logger.NgapLog.Error("AMF Context is nil")
@@ -2695,8 +2695,8 @@ func HandleGetNGAPContext(ngapEvent context.NgapEvt) {
 	ranUeNgapId := getNGAPContextEvt.RanUeNgapId
 	ngapCxtReqNumlist := getNGAPContextEvt.NgapCxtReqNumlist
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -2713,13 +2713,13 @@ func HandleGetNGAPContext(ngapEvent context.NgapEvt) {
 		}
 	}
 
-	spi, ok := n3iwfSelf.IkeSpiLoad(ranUeNgapId)
+	spi, ok := agfSelf.IkeSpiLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get spi from ngapid : %+v", ranUeNgapId)
 		return
 	}
 
-	n3iwfSelf.IKEServer.RcvEventCh <- context.NewGetNGAPContextRepEvt(spi,
+	agfSelf.IKEServer.RcvEventCh <- context.NewGetNGAPContextRepEvt(spi,
 		ngapCxtReqNumlist, ngapCxt)
 }
 
@@ -2731,7 +2731,7 @@ func HandleUnmarshalEAP5GData(ngapEvent context.NgapEvt) {
 	eapVendorData := unmarshalEAP5GDataEvt.EAPVendorData
 	isInitialUE := unmarshalEAP5GDataEvt.IsInitialUE
 
-	n3iwfSelf := context.N3IWFSelf()
+	agfSelf := context.W-AGFSelf()
 
 	anParameters, nasPDU, err := ngap_message.UnmarshalEAP5GData(eapVendorData)
 	if err != nil {
@@ -2771,22 +2771,22 @@ func HandleUnmarshalEAP5GData(ngapEvent context.NgapEvt) {
 			}
 		}
 
-		selectedAMF := n3iwfSelf.AMFSelection(anParameters.GUAMI, anParameters.SelectedPLMNID)
+		selectedAMF := agfSelf.AMFSelection(anParameters.GUAMI, anParameters.SelectedPLMNID)
 		if selectedAMF == nil {
-			n3iwfSelf.IKEServer.RcvEventCh <- context.NewSendEAP5GFailureMsgEvt(spi, context.ErrAMFSelection)
+			agfSelf.IKEServer.RcvEventCh <- context.NewSendEAP5GFailureMsgEvt(spi, context.ErrAMFSelection)
 		} else {
-			ranUe := n3iwfSelf.NewN3iwfRanUe()
+			ranUe := agfSelf.NewWagfRanUe()
 			ranUe.AMF = selectedAMF
 			if anParameters.EstablishmentCause != nil {
 				ranUe.RRCEstablishmentCause = int16(anParameters.EstablishmentCause.Value)
 			}
 
-			n3iwfSelf.IKEServer.RcvEventCh <- context.NewUnmarshalEAP5GDataResponseEvt(spi,
+			agfSelf.IKEServer.RcvEventCh <- context.NewUnmarshalEAP5GDataResponseEvt(spi,
 				ranUe.RanUeNgapId, nasPDU)
 		}
 	} else {
 		ranUeNgapId := unmarshalEAP5GDataEvt.RanUeNgapId
-		ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+		ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 		if !ok {
 			logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 			return
@@ -2804,8 +2804,8 @@ func HandleSendInitialUEMessage(ngapEvent context.NgapEvt) {
 	ipv4Port := sendInitialUEMessageEvt.IPv4Port
 	nasPDU := sendInitialUEMessageEvt.NasPDU
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -2821,8 +2821,8 @@ func HandleSendPDUSessionResourceSetupResponse(ngapEvent context.NgapEvt) {
 	sendPDUSessionResourceSetupResEvt := ngapEvent.(*context.SendPDUSessionResourceSetupResEvt)
 	ranUeNgapId := sendPDUSessionResourceSetupResEvt.RanUeNgapId
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -2898,8 +2898,8 @@ func HandleSendNASMsg(ngapEvent context.NgapEvt) {
 	sendNASMsgEvt := ngapEvent.(*context.SendNASMsgEvt)
 	ranUeNgapId := sendNASMsgEvt.RanUeNgapId
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -2919,8 +2919,8 @@ func HandleStartTCPSignalNASMsg(ngapEvent context.NgapEvt) {
 	startTCPSignalNASMsgEvt := ngapEvent.(*context.StartTCPSignalNASMsgEvt)
 	ranUeNgapId := startTCPSignalNASMsgEvt.RanUeNgapId
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -2935,8 +2935,8 @@ func HandleNASTCPConnEstablishedComplete(ngapEvent context.NgapEvt) {
 	nasTCPConnEstablishedCompleteEvt := ngapEvent.(*context.NASTCPConnEstablishedCompleteEvt)
 	ranUeNgapId := nasTCPConnEstablishedCompleteEvt.RanUeNgapId
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -2975,8 +2975,8 @@ func HandleSendUEContextReleaseRequest(ngapEvent context.NgapEvt) {
 		return
 	}
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -2991,8 +2991,8 @@ func HandleSendUEContextReleaseComplete(ngapEvent context.NgapEvt) {
 	sendUEContextReleaseCompleteEvt := ngapEvent.(*context.SendUEContextReleaseCompleteEvt)
 	ranUeNgapId := sendUEContextReleaseCompleteEvt.RanUeNgapId
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
@@ -3010,8 +3010,8 @@ func HandleSendPDUSessionResourceReleaseRes(ngapEvent context.NgapEvt) {
 	sendPDUSessionResourceReleaseResEvt := ngapEvent.(*context.SendPDUSessionResourceReleaseResEvt)
 	ranUeNgapId := sendPDUSessionResourceReleaseResEvt.RanUeNgapId
 
-	n3iwfSelf := context.N3IWFSelf()
-	ranUe, ok := n3iwfSelf.RanUePoolLoad(ranUeNgapId)
+	agfSelf := context.W-AGFSelf()
+	ranUe, ok := agfSelf.RanUePoolLoad(ranUeNgapId)
 	if !ok {
 		logger.NgapLog.Errorf("Cannot get RanUE from ranUeNgapId : %+v", ranUeNgapId)
 		return
