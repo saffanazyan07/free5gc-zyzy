@@ -8,10 +8,10 @@ import (
 	gtpMsg "github.com/wmnsk/go-gtp/gtpv1/message"
 	"golang.org/x/net/ipv4"
 
-	"github.com/free5gc/n3iwf/internal/gre"
-	gtpQoSMsg "github.com/free5gc/n3iwf/internal/gtp/message"
-	"github.com/free5gc/n3iwf/internal/logger"
-	n3iwfContext "github.com/free5gc/n3iwf/pkg/context"
+	"github.com/free5gc/agf/internal/gre"
+	gtpQoSMsg "github.com/free5gc/agf/internal/gtp/message"
+	"github.com/free5gc/agf/internal/logger"
+	agfContext "github.com/free5gc/agf/pkg/context"
 )
 
 // Parse the fields not supported by go-gtp and forward data to UE.
@@ -25,7 +25,7 @@ func HandleQoSTPDU(c gtp.Conn, senderAddr net.Addr, msg gtpMsg.Message) error {
 	return nil
 }
 
-// Forward user plane packets from N3 to UE with GRE header and new IP header encapsulated
+// Forward user plane packets from AGF to UE with GRE header and new IP header encapsulated
 func forward(packet gtpQoSMsg.QoSTPDUPacket) {
 	defer func() {
 		if p := recover(); p != nil {
@@ -34,10 +34,10 @@ func forward(packet gtpQoSMsg.QoSTPDUPacket) {
 		}
 	}()
 
-	// N3IWF context
-	self := n3iwfContext.N3IWFSelf()
+	// AGF context
+	self := wagfContext.W-AGFSelf()
 
-	// Nwu connection in IPv4
+	/// Nwu connection in IPv4
 	NWuConn := self.NWuIPv4PacketConn
 
 	pktTEID := packet.GetTEID()
@@ -61,7 +61,7 @@ func forward(packet gtpQoSMsg.QoSTPDUPacket) {
 
 	var cm *ipv4.ControlMessage
 
-	for _, childSA := range ikeUe.N3IWFChildSecurityAssociation {
+	for _, childSA := range ikeUe.AGFChildSecurityAssociation {
 		pdusession := ranUe.FindPDUSession(childSA.PDUSessionIds[0])
 		if pdusession != nil && pdusession.GTPConnection.IncomingTEID == pktTEID {
 			logger.GTPLog.Tracef("forwarding IPSec xfrm interfaceid : %d", childSA.XfrmIface.Attrs().Index)
